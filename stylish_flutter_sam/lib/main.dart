@@ -36,7 +36,7 @@ class HomePage extends StatelessWidget {
           children: [
             const HomeBanner(),
             const SizedBox(height: 8.0),
-            HomePhoneCategories(),
+            HomeCategories(),
           ],
         ));
   }
@@ -84,21 +84,47 @@ class BannerCard extends StatelessWidget {
   }
 }
 
-class HomePhoneCategories extends StatelessWidget {
+class HomeCategories extends StatelessWidget {
   final List<Product> womenClothes = List<Product>.generate(
     12,
     (i) => Product("women", 200, "assets/images/ic_cloth_women.jpg"),
   );
+
   final List<Product> menClothes = List<Product>.generate(
     10,
     (i) => Product("men", 100, "assets/images/ic_cloth_men.jpg"),
   );
+
   final List<Product> accessories = List<Product>.generate(
     6,
     (i) => Product("accessory", 1000, "assets/images/ic_accessory.jpg"),
   );
 
-  HomePhoneCategories({super.key});
+  HomeCategories({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return HomePhoneCategories(womenClothes, menClothes, accessories);
+  }
+}
+
+class HomePhoneCategories extends StatefulWidget {
+  final List<Product> womenClothes;
+  final List<Product> menClothes;
+  final List<Product> accessories;
+
+  const HomePhoneCategories(
+      this.womenClothes, this.menClothes, this.accessories,
+      {super.key});
+
+  @override
+  State<HomePhoneCategories> createState() => _HomePhoneCategoriesState();
+}
+
+class _HomePhoneCategoriesState extends State<HomePhoneCategories> {
+  bool isWomenExpanded = true;
+  bool isMenExpanded = true;
+  bool isAccessoriesExpanded = true;
 
   @override
   Widget build(BuildContext context) {
@@ -106,42 +132,81 @@ class HomePhoneCategories extends StatelessWidget {
     int womenTitleIndex = -1;
     int menTitleIndex = -1;
     int otherTitleIndex = -1;
+    List<Product> womenClothes = widget.womenClothes;
+    List<Product> menClothes = widget.menClothes;
+    List<Product> accessories = widget.accessories;
+
     if (womenClothes.isNotEmpty) {
       womenTitleIndex = 0;
       categories.add(CategoryTitle("女裝"));
-      categories.addAll(womenClothes);
+      if (isWomenExpanded) categories.addAll(womenClothes);
     }
     if (menClothes.isNotEmpty) {
       menTitleIndex = categories.length;
       categories.add(CategoryTitle("男裝"));
-      categories.addAll(menClothes);
+      if (isMenExpanded) categories.addAll(menClothes);
     }
     if (accessories.isNotEmpty) {
       otherTitleIndex = categories.length;
       categories.add(CategoryTitle("配件"));
-      categories.addAll(accessories);
+      if (isAccessoriesExpanded) categories.addAll(accessories);
     }
 
     return Expanded(
         child: ListView.builder(
       itemCount: categories.length,
       itemBuilder: (BuildContext context, int index) {
-        if (index == menTitleIndex ||
-            index == womenTitleIndex ||
+        if (index == womenTitleIndex ||
+            index == menTitleIndex ||
             index == otherTitleIndex) {
-          return Center(child: Text(categories[index].name));
+          return CategoryTitleView(
+            title: categories[index].name,
+            onTap: () {
+              setState(() {
+                if (index == womenTitleIndex) {
+                  isWomenExpanded = !isWomenExpanded;
+                }
+                if (index == menTitleIndex) {
+                  isMenExpanded = !isMenExpanded;
+                }
+                if (index == otherTitleIndex) {
+                  isAccessoriesExpanded = !isAccessoriesExpanded;
+                }
+              });
+            },
+          );
         }
         Product product = categories[index] as Product;
-        return CategoryCard(product);
+        return CategoryCardView(product);
       },
     ));
   }
 }
 
-class CategoryCard extends StatelessWidget {
+class CategoryTitleView extends StatelessWidget {
+  final String title;
+  final Function() onTap;
+
+  const CategoryTitleView(
+      {required this.title, required this.onTap, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+        child: InkWell(
+      onTap: onTap,
+      child: Text(
+        title,
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
+    ));
+  }
+}
+
+class CategoryCardView extends StatelessWidget {
   Product product;
 
-  CategoryCard(this.product, {super.key});
+  CategoryCardView(this.product, {super.key});
 
   @override
   Widget build(BuildContext context) {
