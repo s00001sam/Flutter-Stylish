@@ -64,7 +64,10 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/images/ic_stylish_logo.png
-    - assets/images/cloth01.jpg
+    - assets/images/ic_cloth_banner.jpg
+    - assets/images/ic_accessory.jpg
+    - assets/images/ic_cloth_men.jpg
+    - assets/images/ic_cloth_women.jpg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
