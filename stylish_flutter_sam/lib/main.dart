@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'MyCustomScrollBehavior.dart';
 import 'Product.dart';
+import 'Util.dart';
 
 void main() {
   runApp(const StylishApp());
@@ -108,6 +109,9 @@ class HomeCategories extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if(isPhoneDevice(context)) {
+      return HomePhoneCategories(womenClothes, menClothes, accessories);
+    }
     return HomeWebCategories(womenClothes, menClothes, accessories);
   }
 }
