@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'MyCustomScrollBehavior.dart';
 import 'Product.dart';
 
 void main() {
@@ -11,7 +12,8 @@ class StylishApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      scrollBehavior: MyCustomScrollBehavior(),
       home: HomePage(),
     );
   }
@@ -23,22 +25,24 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Image.asset(
-            "assets/images/ic_stylish_logo.png",
-            fit: BoxFit.contain,
-            width: 130,
-          ),
-          centerTitle: true,
-          backgroundColor: const Color(0xffe1e1e1),
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        title: Image.asset(
+          "assets/images/ic_stylish_logo.png",
+          fit: BoxFit.contain,
+          width: 130,
         ),
-        body: Column(
-          children: [
-            const HomeBanner(),
-            const SizedBox(height: 8.0),
-            HomeCategories(),
-          ],
-        ));
+        centerTitle: true,
+        backgroundColor: const Color(0xffe1e1e1),
+      ),
+      body: Column(
+        children: [
+          const HomeBanner(),
+          const SizedBox(height: 8.0),
+          HomeCategories()
+        ],
+      ),
+    );
   }
 }
 
@@ -104,7 +108,7 @@ class HomeCategories extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HomePhoneCategories(womenClothes, menClothes, accessories);
+    return HomeWebCategories(womenClothes, menClothes, accessories);
   }
 }
 
@@ -180,6 +184,78 @@ class _HomePhoneCategoriesState extends State<HomePhoneCategories> {
         return CategoryCardView(product);
       },
     ));
+  }
+}
+
+class HomeWebCategories extends StatefulWidget {
+  final List<Product> womenClothes;
+  final List<Product> menClothes;
+  final List<Product> accessories;
+
+  const HomeWebCategories(this.womenClothes, this.menClothes, this.accessories,
+      {super.key});
+
+  @override
+  State<HomeWebCategories> createState() => _HomeWebCategoriesState();
+}
+
+class _HomeWebCategoriesState extends State<HomeWebCategories> {
+  bool isWomenExpanded = true;
+  bool isMenExpanded = true;
+  bool isAccessoriesExpanded = true;
+
+  @override
+  Widget build(BuildContext context) {
+    final List<Product> womenClothes = widget.womenClothes;
+    final List<Product> menClothes = widget.menClothes;
+    final List<Product> accessories = widget.accessories;
+
+    return Expanded(
+      child: Row(
+        children: [
+          _listWithTitle("女裝", womenClothes),
+          _listWithTitle("男裝", menClothes),
+          _listWithTitle("配件", accessories),
+        ],
+      ),
+    );
+  }
+
+  Expanded _listWithTitle(
+    String title,
+    List<Product> categories,
+  ) {
+    return Expanded(
+        child: Column(
+      children: [
+        CategoryTitleView(
+          title: title,
+          onTap: () {
+            setState(() {
+              if (title == "女裝") isWomenExpanded = !isWomenExpanded;
+              if (title == "男裝") isMenExpanded = !isMenExpanded;
+              if (title == "配件") isAccessoriesExpanded = !isAccessoriesExpanded;
+            });
+          },
+        ),
+        if (title == "女裝" && isWomenExpanded ||
+            title == "男裝" && isMenExpanded ||
+            title == "配件" && isAccessoriesExpanded)
+          _list(categories),
+      ],
+    ));
+  }
+
+  Expanded _list(List<Product> categories) {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: categories.length,
+        itemBuilder: (BuildContext context, int index) {
+          Product product = categories[index];
+          return CategoryCardView(product);
+        },
+      ),
+    );
   }
 }
 
