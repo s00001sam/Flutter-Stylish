@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stylish_flutter_sam/bloc/Home/home_bloc.dart';
+import 'package:stylish_flutter_sam/view/ProductContentPage.dart';
 
 import '../data/HomeItem.dart';
 import '../util/Util.dart';
@@ -33,7 +34,6 @@ class HomePage extends StatelessWidget {
           );
         }
         if (state is HomeSuccessState) {
-          print("sam00 ${state.homeDatum?.categories}");
           var bannerList = state.homeDatum?.bannerClothes ?? [];
           var categoryMap = state.homeDatum?.categoriesMap() ?? {};
 
@@ -52,9 +52,12 @@ class HomePage extends StatelessWidget {
 }
 
 class HomeBanner extends StatelessWidget {
-  List<HomeProduct>? list;
+  final List<HomeProduct>? list;
 
-  HomeBanner({required this.list, super.key});
+  const HomeBanner({
+    required this.list,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -77,25 +80,35 @@ class HomeBanner extends StatelessWidget {
 }
 
 class BannerCard extends StatelessWidget {
-  HomeProduct? product;
+  final HomeProduct? product;
 
-  BannerCard({required HomeProduct this.product, Key? key}) : super(key: key);
+  const BannerCard({
+    required this.product,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var image = (product?.image == null) ? "" : product?.image;
+    var image = product?.image ?? "";
+    var id = product?.id ?? "";
 
     return SizedBox(
       width: 300,
-      child: Card(
-        semanticContainer: true,
-        margin: const EdgeInsets.all(8.0),
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-        child: Image.asset(
-          image!,
-          fit: BoxFit.fill,
+      child: InkWell(
+        onTap: () {
+          goProductContent(context, id);
+        },
+        child: Card(
+          semanticContainer: true,
+          margin: const EdgeInsets.all(8.0),
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          child: Image.asset(
+            image,
+            fit: BoxFit.fill,
+          ),
         ),
       ),
     );
@@ -291,62 +304,80 @@ class CategoryTitleView extends StatelessWidget {
 }
 
 class CategoryCardView extends StatelessWidget {
-  HomeProduct product;
+  late HomeProduct product;
 
   CategoryCardView(this.product, {super.key});
 
   @override
   Widget build(BuildContext context) {
+    var id = product.id;
+
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       height: 120,
-      child: Card(
-        semanticContainer: true,
-        margin: const EdgeInsets.all(8.0),
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        shape: RoundedRectangleBorder(
-          side: const BorderSide(color: Colors.black45, width: 2),
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(8.0),
-                bottomLeft: Radius.circular(8.0),
+      child: InkWell(
+        onTap: () {
+          goProductContent(context, id);
+        },
+        child: Card(
+          semanticContainer: true,
+          margin: const EdgeInsets.all(8.0),
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          shape: RoundedRectangleBorder(
+            side: const BorderSide(color: Colors.black45, width: 2),
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(8.0),
+                  bottomLeft: Radius.circular(8.0),
+                ),
+                child: Image.asset(
+                  product.image,
+                  width: 60,
+                  fit: BoxFit.fitHeight,
+                ),
               ),
-              child: Image.asset(
-                product.image,
-                width: 60,
-                fit: BoxFit.fitHeight,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    product.name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.left,
-                  ),
-                  const SizedBox(height: 4.0),
-                  Text(
-                    "NT\$ ${product.price}",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.left,
-                  ),
-                ],
-              ),
-            )
-          ],
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      product.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.left,
+                    ),
+                    const SizedBox(height: 4.0),
+                    Text(
+                      "NT\$ ${product.price}",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.left,
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
   }
+}
+
+void goProductContent(
+  BuildContext context,
+  String productId,
+) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+        builder: (context) => ProductContentPage(productId: productId)),
+  );
 }
