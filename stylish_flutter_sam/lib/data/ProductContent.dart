@@ -16,6 +16,34 @@ class ProductContent {
     required this.description,
     required this.images,
   });
+
+  List<int> colors() {
+    var colors = stocks.map((stock) => stock.color);
+    return colors.toList();
+  }
+
+  ProductStock? stockByColor(int colorsInt) {
+    try {
+      return stocks.firstWhere((stock) => stock.color == colorsInt);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  List<ProductSize> sizesByColor(int colorInt) {
+    var stock = stockByColor(colorInt);
+    return stock?.sizeCountMap.keys.toList() ?? [];
+  }
+
+  int totalCountByColorSize(
+    int colorInt,
+    ProductSize size,
+  ) {
+    var stock = stockByColor(colorInt);
+    var sizeCountMap = stock?.sizeCountMap;
+    var totalCount = sizeCountMap?[size];
+    return totalCount ?? 0;
+  }
 }
 
 class ProductStock {
