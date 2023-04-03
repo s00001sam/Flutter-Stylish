@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:stylish_flutter_sam/bloc/Home/home_bloc.dart';
 import 'package:stylish_flutter_sam/bloc/content/content_selector_cubit.dart';
 import 'package:stylish_flutter_sam/bloc/content/product_content_bloc.dart';
 import 'package:stylish_flutter_sam/data/ProductContent.dart';
+
+import '../util/Util.dart';
 
 class ProductContentPage extends StatelessWidget {
   const ProductContentPage({
@@ -79,22 +80,67 @@ class ProductContentContainer extends StatelessWidget {
         child: Text("not found"),
       );
     }
+    var isPhone = isPhoneDevice(context);
 
-    return CustomScrollView(
-      slivers: [
-        ContentTopInfo(product: product),
-        ContentSelectorSection(product: product),
-        DescriptionSection(product: product),
-        ImagesSection(images: product?.images ?? []),
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 800),
+      child: CustomScrollView(
+        slivers: [
+          if (isPhone)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16),
+                child: TopImageSection(product: product),
+              ),
+            ),
+          if (isPhone)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                child: NameAndSelectorSection(product: product),
+              ),
+            ),
+          if (!isPhone)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                child: WebTopSection(product: product),
+              ),
+            ),
+          DescriptionSection(product: product),
+          ImagesSection(images: product?.images ?? []),
+        ],
+      ),
+    );
+  }
+}
+
+class WebTopSection extends StatelessWidget {
+  final ProductContent? product;
+
+  const WebTopSection({required this.product, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Flexible(
+            child: Padding(
+          padding: const EdgeInsets.only(top: 16.0),
+          child: TopImageSection(product: product),
+        )),
+        const SizedBox(width: 32.0),
+        Flexible(child: NameAndSelectorSection(product: product)),
       ],
     );
   }
 }
 
-class ContentTopInfo extends StatelessWidget {
+class TopImageSection extends StatelessWidget {
   final ProductContent? product;
 
-  const ContentTopInfo({required this.product, Key? key}) : super(key: key);
+  const TopImageSection({required this.product, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -102,15 +148,34 @@ class ContentTopInfo extends StatelessWidget {
     context.read<ContentSelectorCubit>().init(product);
 
     var image = product?.images.first ?? "";
+
+    return SizedBox(
+      child: AspectRatio(
+        aspectRatio: 2 / 3,
+        child: Image.asset(image, fit: BoxFit.fill),
+      ),
+    );
+  }
+}
+
+class NameAndSelectorSection extends StatelessWidget {
+  final ProductContent? product;
+
+  const NameAndSelectorSection({required this.product, Key? key})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (product == null) return Container();
     var name = product?.name ?? "";
     var uid = product?.uid ?? "";
     var price = "NT\$ ${product?.price}";
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16),
-        child: Column(
+    var colors = product?.colors() ?? [];
+
+    return BlocBuilder<ContentSelectorCubit, ContentSelectorState>(
+      builder: (context, state) {
+        return Column(
           children: [
-            SizedBox(height: 500, child: Image.asset(image, fit: BoxFit.fill)),
             Container(
               width: MediaQuery.of(context).size.width,
               padding: const EdgeInsets.all(8.0),
@@ -150,60 +215,34 @@ class ContentTopInfo extends StatelessWidget {
               ),
             ),
             const Divider(height: 1.0, color: Colors.grey),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ContentSelectorSection extends StatelessWidget {
-  final ProductContent? product;
-
-  const ContentSelectorSection({required this.product, Key? key})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    if (product == null) return Container();
-
-    var colors = product?.colors() ?? [];
-
-    return BlocBuilder<ContentSelectorCubit, ContentSelectorState>(
-      builder: (context, state) {
-        return SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0),
-            child: Column(
-              children: [
-                ColorSelector(colors: colors),
-                const Divider(height: 32, color: Colors.transparent),
-                SizeSelector(
-                  sizes: state.sizes,
-                  selectedColorInt: state.selectedColor,
-                  selectedSize: state.selectedSize,
-                ),
-                const Divider(height: 32, color: Colors.transparent),
-                CountSelector(
-                  totalCount: state.totalCount,
-                  selectedColor: state.selectedColor,
-                  selectedSize: state.selectedSize,
-                ),
-                const Divider(height: 32, color: Colors.transparent),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black, // Background color
-                    ),
-                    child: Text(state.selectedCount > 0 ? "加入購物車" : "請選擇尺寸"),
-                  ),
-                ),
-              ],
+            const Divider(height: 32, color: Colors.transparent),
+            ColorSelector(colors: colors),
+            const Divider(height: 32, color: Colors.transparent),
+            SizeSelector(
+              sizes: state.sizes,
+              selectedColorInt: state.selectedColor,
+              selectedSize: state.selectedSize,
             ),
-          ),
+            const Divider(height: 32, color: Colors.transparent),
+            CountSelector(
+              totalCount: state.totalCount,
+              selectedColor: state.selectedColor,
+              selectedSize: state.selectedSize,
+              selectedCont: state.selectedCount,
+            ),
+            const Divider(height: 32, color: Colors.transparent),
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black, // Background color
+                ),
+                child: Text(state.selectedCount > 0 ? "加入購物車" : "請選擇尺寸"),
+              ),
+            ),
+          ],
         );
       },
     );
@@ -367,11 +406,13 @@ class CountSelector extends StatefulWidget {
   final int totalCount;
   final int? selectedColor;
   final ProductSize? selectedSize;
+  final int selectedCont;
 
   CountSelector({
     required this.totalCount,
     required this.selectedColor,
     required this.selectedSize,
+    required this.selectedCont,
     Key? key,
   }) : super(key: key);
 
@@ -384,12 +425,13 @@ class _CountSelectorState extends State<CountSelector> {
 
   @override
   void initState() {
+    var selectedCont = widget.selectedCont;
+    if (selectedCont != 0) _countController.text = selectedCont.toString();
     _countController.addListener(() {
       var totalCount = widget.totalCount;
       var selectedColor = widget.selectedColor;
       var selectedSize = widget.selectedSize;
       var input = _countController.text;
-      print(input);
       var inputCount = int.tryParse(input) ?? 0;
       if (input.startsWith("0") || totalCount == 0) {
         _countController.text = "";
@@ -533,11 +575,13 @@ class ImagesSection extends StatelessWidget {
         (BuildContext context, int index) {
           var image = images[index];
           return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-            height: 200,
-            child: Image.asset(
-              image,
-              fit: BoxFit.fill,
+            margin: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 8.0),
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Image.asset(
+                image,
+                fit: BoxFit.fill,
+              ),
             ),
           );
         },
