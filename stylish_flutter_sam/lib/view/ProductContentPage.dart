@@ -84,6 +84,8 @@ class ProductContentContainer extends StatelessWidget {
       slivers: [
         ContentTopInfo(product: product),
         ContentSelectorSection(product: product),
+        DescriptionSection(product: product),
+        ImagesSection(images: product?.images ?? []),
       ],
     );
   }
@@ -463,6 +465,83 @@ class _CountSelectorState extends State<CountSelector> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class DescriptionSection extends StatelessWidget {
+  final ProductContent? product;
+
+  const DescriptionSection({required this.product, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (product == null) return Container();
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32.0),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: Column(
+            children: [
+              _topLine(),
+              const Divider(height: 8.0, color: Colors.transparent),
+              Text(product?.description ?? ""),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _topLine() {
+    Gradient gradient = const LinearGradient(
+      colors: [Colors.blueAccent, Colors.greenAccent],
+    );
+    Shader shader = gradient.createShader(const Rect.fromLTWH(0, 0, 100, 0));
+    return Row(
+      children: [
+        Text(
+          "細部說明",
+          style: TextStyle(
+            foreground: Paint()..shader = shader,
+          ),
+        ),
+        Expanded(
+          child: Container(
+              margin: const EdgeInsets.only(left: 16.0),
+              child: const Divider(
+                color: Colors.black45,
+                height: 2,
+              )),
+        ),
+      ],
+    );
+  }
+}
+
+class ImagesSection extends StatelessWidget {
+  final List<String> images;
+
+  const ImagesSection({required this.images, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (BuildContext context, int index) {
+          var image = images[index];
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+            height: 200,
+            child: Image.asset(
+              image,
+              fit: BoxFit.fill,
+            ),
+          );
+        },
+        childCount: images.length, // 1000 list items
       ),
     );
   }
