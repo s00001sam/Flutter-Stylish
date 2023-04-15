@@ -1,28 +1,33 @@
 part of 'home_bloc.dart';
 
 abstract class HomeState {
-  HomeDatum? homeDatum;
-
-  HomeState(this.homeDatum);
+  HomeState();
 }
 
 class HomeInitial extends HomeState {
-  HomeInitial() : super(null);
+  HomeInitial() : super();
 }
 
 class HomeLoadingState extends HomeState {
-  HomeLoadingState() : super(null);
+  HomeLoadingState() : super();
 }
 
 class HomeSuccessState extends HomeState {
-  @override
-  HomeDatum? homeDatum;
+  List<HomeProduct>? womenDatum;
+  List<HomeProduct>? menDatum;
+  List<HomeProduct>? accessoriesDatum;
+  List<HomeProduct>? hotsDatum;
 
-  HomeSuccessState(this.homeDatum) : super(homeDatum);
+  HomeSuccessState({
+    required this.womenDatum,
+    required this.menDatum,
+    required this.accessoriesDatum,
+    required this.hotsDatum,
+  }) : super();
 }
 
 class HomeErrorState extends HomeState {
   String errorMsg = "";
 
-  HomeErrorState(this.errorMsg) : super(null);
+  HomeErrorState(this.errorMsg) : super();
 }

@@ -1,8 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
 import 'package:stylish_flutter_sam/data/ProductContent.dart';
-
-import '../../repo/StylishRepository.dart';
 
 part 'content_selector_state.dart';
 

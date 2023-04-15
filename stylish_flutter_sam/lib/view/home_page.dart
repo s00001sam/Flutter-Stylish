@@ -1,10 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stylish_flutter_sam/bloc/Home/home_bloc.dart';
-import 'package:stylish_flutter_sam/view/ProductContentPage.dart';
+import 'package:stylish_flutter_sam/view/product_content_page.dart';
 
 import '../data/HomeItem.dart';
-import '../util/Util.dart';
+import '../util/util.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -34,14 +35,20 @@ class HomePage extends StatelessWidget {
           );
         }
         if (state is HomeSuccessState) {
-          var bannerList = state.homeDatum?.bannerClothes ?? [];
-          var categoryMap = state.homeDatum?.categoriesMap() ?? {};
+          var hots = state.hotsDatum;
+          var womenClothes = state.womenDatum;
+          var menClothes = state.menDatum;
+          var accessories = state.accessoriesDatum;
 
           return Column(
             children: [
-              HomeBanner(list: bannerList),
+              HomeBanner(list: hots),
               const SizedBox(height: 8.0),
-              HomeCategories(map: categoryMap),
+              HomeCategories(
+                womenClothes: womenClothes ?? [],
+                menClothes: menClothes ?? [],
+                accessories: accessories ?? [],
+              ),
             ],
           );
         }
@@ -105,9 +112,10 @@ class BannerCard extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16.0),
           ),
-          child: Image.asset(
-            image,
+          child: CachedNetworkImage(
             fit: BoxFit.fill,
+            imageUrl: image,
+            errorWidget: (context, url, error) => const Icon(Icons.error),
           ),
         ),
       ),
@@ -116,18 +124,19 @@ class BannerCard extends StatelessWidget {
 }
 
 class HomeCategories extends StatelessWidget {
-  Map<CategoryType, List<HomeProduct>>? map;
+  List<HomeProduct> womenClothes;
+  List<HomeProduct> menClothes;
+  List<HomeProduct> accessories;
 
-  HomeCategories({required this.map, super.key});
+  HomeCategories({
+    required this.womenClothes,
+    required this.menClothes,
+    required this.accessories,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    if (map == null) return Container();
-
-    var womenClothes = map?[CategoryType.women] ?? [];
-    var menClothes = map?[CategoryType.men] ?? [];
-    var accessories = map?[CategoryType.accessory] ?? [];
-
     if (isPhoneDevice(context)) {
       return HomePhoneCategories(womenClothes, menClothes, accessories);
     }
@@ -335,10 +344,11 @@ class CategoryCardView extends StatelessWidget {
                   topLeft: Radius.circular(8.0),
                   bottomLeft: Radius.circular(8.0),
                 ),
-                child: Image.asset(
-                  product.image,
+                child: CachedNetworkImage(
                   width: 60,
-                  fit: BoxFit.fitHeight,
+                  fit: BoxFit.fill,
+                  imageUrl: product.image,
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
                 ),
               ),
               Padding(

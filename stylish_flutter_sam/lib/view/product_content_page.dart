@@ -5,7 +5,7 @@ import 'package:stylish_flutter_sam/bloc/content/content_selector_cubit.dart';
 import 'package:stylish_flutter_sam/bloc/content/product_content_bloc.dart';
 import 'package:stylish_flutter_sam/data/ProductContent.dart';
 
-import '../util/Util.dart';
+import '../util/util.dart';
 
 class ProductContentPage extends StatelessWidget {
   const ProductContentPage({
@@ -496,8 +496,6 @@ class _CountSelectorState extends State<CountSelector> {
             onTap: () {
               var input = _countController.text;
               var inputCount = int.tryParse(input) ?? 0;
-              print(inputCount);
-              print(totalCount);
               if (inputCount >= totalCount) return;
               _countController.text = (inputCount + 1).toString();
             },

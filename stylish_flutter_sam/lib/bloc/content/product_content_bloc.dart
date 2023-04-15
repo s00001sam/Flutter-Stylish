@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:stylish_flutter_sam/data/ProductContent.dart';
 
-import '../../repo/StylishRepository.dart';
+import '../../api/repo/stylish_repository.dart';
 
 part 'product_content_event.dart';
 

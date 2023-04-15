@@ -1,4 +1,4 @@
-import 'package:stylish_flutter_sam/util/Util.dart';
+import 'package:stylish_flutter_sam/util/util.dart';
 
 abstract class HomeItem {
   late String name;
@@ -12,7 +12,13 @@ class HomeProduct implements HomeItem {
   late String image;
   late CategoryType type;
 
-  HomeProduct(this.id, this.name, this.price, this.image, this.type);
+  HomeProduct({
+    required this.id,
+    required this.name,
+    required this.price,
+    required this.image,
+    required this.type,
+  });
 }
 
 class HomeCategoryTitle implements HomeItem {
@@ -39,5 +45,6 @@ enum CategoryType {
   women,
   men,
   accessory,
+  banner,
   other,
 }

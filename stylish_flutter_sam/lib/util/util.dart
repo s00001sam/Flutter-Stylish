@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:stylish_flutter_sam/data/ProductsDatum.dart';
 
 bool isPhoneDevice(BuildContext context) {
   double deviceWidth = MediaQuery.of(context).size.shortestSide;
