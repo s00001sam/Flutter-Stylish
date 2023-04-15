@@ -7,6 +7,7 @@ class ApiService {
   static const _womenPath = '/products/women';
   static const _menPath = '/products/men';
   static const _accessoriesPath = '/products/accessories';
+  static const _detailPath = '/products/details';
 
   final _dio = Dio(
     BaseOptions(
@@ -26,6 +27,11 @@ class ApiService {
   Future<Response<dynamic>> getMenClothes() => _dio.get(_menPath);
 
   Future<Response<dynamic>> getAccessories() => _dio.get(_accessoriesPath);
+
+  Future<Response<dynamic>> getProductContent(int id) => _dio.get(
+        _detailPath,
+        queryParameters: {'id': id},
+      );
 
   void initDioInterceptors() {
     _dio.interceptors.add(PrettyDioLogger());

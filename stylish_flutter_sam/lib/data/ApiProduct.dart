@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:stylish_flutter_sam/data/ProductContent.dart';
 
 import 'Colors.dart';
 import 'Variants.dart';
@@ -166,6 +167,37 @@ class ApiProduct {
       variants: map['variants'] as List<Variants>,
       mainImage: map['mainImage'] as String,
       images: map['images'] as List<String>,
+    );
+  }
+
+  ProductContent toProductContent() {
+    var colorCodes =
+        colors?.map((color) => color.code).whereType<String>().toList() ?? [];
+    List<ProductStock> stocks = [];
+    colorCodes.forEach((colorCode) {
+      var productStock = ProductStock(
+        color: colorCode.toString(),
+        sizeCountMap: {},
+      );
+      var variantsByColor =
+          variants?.where((variant) => variant.colorCode == colorCode) ?? [];
+      for (var variant in variantsByColor) {
+        var size = variant.size?.toProductSize();
+        var stock = variant.stock ?? 0;
+        if (size == null || stock == 0) continue;
+        productStock.sizeCountMap[size] = stock;
+      }
+      stocks.add(productStock);
+    });
+
+    return ProductContent(
+      productId: id?.toString() ?? '',
+      name: title ?? '',
+      price: price ?? 0,
+      stocks: stocks,
+      description: story ?? '',
+      mainImage: mainImage ?? '',
+      images: images ?? [],
     );
   }
 }

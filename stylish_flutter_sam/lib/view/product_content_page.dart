@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,7 +20,7 @@ class ProductContentPage extends StatelessWidget {
   Widget build(BuildContext context) {
     context
         .read<ProductContentBloc>()
-        .add(ProductContentLoadEvent(productId: productId));
+        .add(ProductContentLoadEvent(productId: int.parse(productId)));
 
     return MultiBlocProvider(
       providers: [
@@ -147,12 +148,16 @@ class TopImageSection extends StatelessWidget {
     if (product == null) return Container();
     context.read<ContentSelectorCubit>().init(product);
 
-    var image = product?.images.first ?? "";
+    var image = product?.mainImage ?? "";
 
     return SizedBox(
       child: AspectRatio(
         aspectRatio: 2 / 3,
-        child: Image.asset(image, fit: BoxFit.fill),
+        child: CachedNetworkImage(
+          fit: BoxFit.fill,
+          imageUrl: image,
+          errorWidget: (context, url, error) => const Icon(Icons.error),
+        ),
       ),
     );
   }
@@ -168,12 +173,13 @@ class NameAndSelectorSection extends StatelessWidget {
   Widget build(BuildContext context) {
     if (product == null) return Container();
     var name = product?.name ?? "";
-    var uid = product?.uid ?? "";
+    var uid = product?.productId ?? "";
     var price = "NT\$ ${product?.price}";
     var colors = product?.colors() ?? [];
 
     return BlocBuilder<ContentSelectorCubit, ContentSelectorState>(
       builder: (context, state) {
+        print('count..=${state.selectedCount}');
         return Column(
           children: [
             Container(
@@ -220,7 +226,7 @@ class NameAndSelectorSection extends StatelessWidget {
             const Divider(height: 32, color: Colors.transparent),
             SizeSelector(
               sizes: state.sizes,
-              selectedColorInt: state.selectedColor,
+              selectedColorCode: state.selectedColor,
               selectedSize: state.selectedSize,
             ),
             const Divider(height: 32, color: Colors.transparent),
@@ -250,7 +256,7 @@ class NameAndSelectorSection extends StatelessWidget {
 }
 
 class ColorSelector extends StatelessWidget {
-  final List<int> colors;
+  final List<String> colors;
 
   const ColorSelector({required this.colors, Key? key}) : super(key: key);
 
@@ -271,7 +277,7 @@ class ColorSelector extends StatelessWidget {
     );
   }
 
-  Widget _colorList(List<int> colors) {
+  Widget _colorList(List<String> colors) {
     return Expanded(
       child: SizedBox(
         height: 16,
@@ -279,19 +285,19 @@ class ColorSelector extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           itemCount: colors.length,
           itemBuilder: (BuildContext context, int index) {
-            var currColorInt = colors[index];
+            var currColorCode = colors[index];
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
               child: InkWell(
                 onTap: () {
                   context
                       .read<ContentSelectorCubit>()
-                      .selectColor(currColorInt);
+                      .selectColor(currColorCode);
                 },
                 child: Container(
                   width: 16,
                   decoration: BoxDecoration(
-                    color: Color(currColorInt),
+                    color: currColorCode.toColor(),
                     border: Border.all(color: Colors.grey, width: 0.5),
                   ),
                 ),
@@ -306,12 +312,12 @@ class ColorSelector extends StatelessWidget {
 
 class SizeSelector extends StatelessWidget {
   final List<ProductSize> sizes;
-  final int? selectedColorInt;
+  final String? selectedColorCode;
   final ProductSize? selectedSize;
 
   const SizeSelector({
     required this.sizes,
-    required this.selectedColorInt,
+    required this.selectedColorCode,
     required this.selectedSize,
     Key? key,
   }) : super(key: key);
@@ -327,7 +333,7 @@ class SizeSelector extends StatelessWidget {
             thickness: 1,
             color: Color(0x4A525252),
           ),
-          _sizeList(context, sizes, selectedColorInt, selectedSize),
+          _sizeList(context, sizes, selectedColorCode, selectedSize),
         ],
       ),
     );
@@ -336,7 +342,7 @@ class SizeSelector extends StatelessWidget {
   Widget _sizeList(
     BuildContext context,
     List<ProductSize> sizes,
-    int? selectedColorInt,
+    String? selectedColorCode,
     ProductSize? selectedSize,
   ) {
     return Expanded(
@@ -350,7 +356,7 @@ class SizeSelector extends StatelessWidget {
               child: _sizeCard(
                 context,
                 sizes[index],
-                selectedColorInt,
+                selectedColorCode,
                 selectedSize,
               ),
             );
@@ -363,7 +369,7 @@ class SizeSelector extends StatelessWidget {
   Widget _sizeCard(
     BuildContext context,
     ProductSize size,
-    int? selectedColorInt,
+    String? selectedColorCode,
     ProductSize? selectedSize,
   ) {
     String sizeText;
@@ -391,10 +397,10 @@ class SizeSelector extends StatelessWidget {
       width: 48,
       child: InkWell(
         onTap: () {
-          if (selectedColorInt == null) return;
+          if (selectedColorCode == null) return;
           context
               .read<ContentSelectorCubit>()
-              .selectSize(selectedColorInt, size);
+              .selectSize(selectedColorCode, size);
         },
         child: Center(child: Text(sizeText)),
       ),
@@ -404,11 +410,11 @@ class SizeSelector extends StatelessWidget {
 
 class CountSelector extends StatefulWidget {
   final int totalCount;
-  final int? selectedColor;
+  final String? selectedColor;
   final ProductSize? selectedSize;
   final int selectedCont;
 
-  CountSelector({
+  const CountSelector({
     required this.totalCount,
     required this.selectedColor,
     required this.selectedSize,
@@ -425,8 +431,6 @@ class _CountSelectorState extends State<CountSelector> {
 
   @override
   void initState() {
-    var selectedCont = widget.selectedCont;
-    if (selectedCont != 0) _countController.text = selectedCont.toString();
     _countController.addListener(() {
       var totalCount = widget.totalCount;
       var selectedColor = widget.selectedColor;
@@ -458,6 +462,9 @@ class _CountSelectorState extends State<CountSelector> {
   @override
   Widget build(BuildContext context) {
     var totalCount = widget.totalCount;
+    var selectedCont = widget.selectedCont;
+    var selectCountStr = selectedCont <= 0 ? '' : selectedCont.toString();
+    _countController.text = selectCountStr;
 
     return IntrinsicHeight(
       child: Row(
@@ -576,9 +583,10 @@ class ImagesSection extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 8.0),
             child: AspectRatio(
               aspectRatio: 16 / 9,
-              child: Image.asset(
-                image,
+              child: CachedNetworkImage(
                 fit: BoxFit.fill,
+                imageUrl: image,
+                errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
             ),
           );

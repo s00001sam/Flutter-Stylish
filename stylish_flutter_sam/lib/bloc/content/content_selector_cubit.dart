@@ -5,19 +5,20 @@ part 'content_selector_state.dart';
 
 class ContentSelectorCubit extends Cubit<ContentSelectorState> {
   ProductContent? content;
+
   ContentSelectorCubit() : super(ContentSelectorInitial());
 
   void init(ProductContent? content) {
     this.content = content;
   }
 
-  void selectColor(int colorInt) {
-    if(content == null) return;
+  void selectColor(String colorCode) {
+    if (content == null) return;
 
-    var sizes = content?.sizesByColor(colorInt) ?? [];
+    var sizes = content?.sizesByColor(colorCode) ?? [];
 
     emit(ContentSelectorState(
-      selectedColor: colorInt,
+      selectedColor: colorCode,
       sizes: sizes,
       selectedSize: null,
       totalCount: 0,
@@ -25,14 +26,14 @@ class ContentSelectorCubit extends Cubit<ContentSelectorState> {
     ));
   }
 
-  void selectSize(int colorInt, ProductSize size) {
-    if(content == null) return;
+  void selectSize(String colorCode, ProductSize size) {
+    if (content == null) return;
 
-    var sizes = content?.sizesByColor(colorInt) ?? [];
-    var totalCount = content?.totalCountByColorSize(colorInt, size) ?? 0;
+    var sizes = content?.sizesByColor(colorCode) ?? [];
+    var totalCount = content?.totalCountByColorSize(colorCode, size) ?? 0;
 
     emit(ContentSelectorState(
-      selectedColor: colorInt,
+      selectedColor: colorCode,
       sizes: sizes,
       selectedSize: size,
       totalCount: totalCount,
@@ -40,14 +41,14 @@ class ContentSelectorCubit extends Cubit<ContentSelectorState> {
     ));
   }
 
-  void setSelectedCount(int colorInt, ProductSize size, int count) {
-    if(content == null) return;
+  void setSelectedCount(String colorCode, ProductSize size, int count) {
+    if (content == null) return;
 
-    var sizes = content?.sizesByColor(colorInt) ?? [];
-    var totalCount = content?.totalCountByColorSize(colorInt, size) ?? 0;
+    var sizes = content?.sizesByColor(colorCode) ?? [];
+    var totalCount = content?.totalCountByColorSize(colorCode, size) ?? 0;
 
     emit(ContentSelectorState(
-      selectedColor: colorInt,
+      selectedColor: colorCode,
       sizes: sizes,
       selectedSize: size,
       totalCount: totalCount,

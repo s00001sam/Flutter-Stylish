@@ -1,7 +1,7 @@
 part of 'content_selector_cubit.dart';
 
 class ContentSelectorState {
-  int? selectedColor;
+  String? selectedColor;
   List<ProductSize> sizes = [];
   ProductSize? selectedSize;
   int totalCount = 0;

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
 import 'package:stylish_flutter_sam/data/ProductContent.dart';
 
 import '../../api/repo/stylish_repository.dart';
@@ -18,7 +17,8 @@ class ProductContentBloc
     on<ProductContentLoadEvent>((event, emit) async {
       emit(ProductContentLoadingState());
       try {
-        var datum = await _repository.getProductContent(event.productId);
+        var apiDatum = await _repository.getProductContent(event.productId);
+        var datum = apiDatum.apiProduct.toProductContent();
         emit(ProductContentSuccessState(datum));
       } catch (e) {
         emit(ProductContentErrorState(e.toString()));
