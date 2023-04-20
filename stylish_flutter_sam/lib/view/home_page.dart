@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stylish_flutter_sam/bloc/Home/home_bloc.dart';
 import 'package:stylish_flutter_sam/view/product_content_page.dart';
@@ -12,6 +13,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _getPlatformData();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -55,6 +57,17 @@ class HomePage extends StatelessWidget {
         return Container();
       }),
     );
+  }
+
+  Future<void> _getPlatformData() async {
+    var platform = const MethodChannel('SAM_STYLISH_CHANNEL');
+    String str;
+    try {
+      str = await platform.invokeMethod('PASS_PLATFORM_DATA');
+    } on PlatformException catch (e) {
+      str = 'no data';
+    }
+    print('str = $str');
   }
 }
 
