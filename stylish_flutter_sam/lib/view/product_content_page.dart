@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stylish_flutter_sam/bloc/content/content_selector_cubit.dart';
 import 'package:stylish_flutter_sam/bloc/content/product_content_bloc.dart';
 import 'package:stylish_flutter_sam/data/ProductContent.dart';
+import 'package:stylish_flutter_sam/view/tappay_page.dart';
 
 import '../util/util.dart';
 
@@ -241,7 +242,9 @@ class NameAndSelectorSection extends StatelessWidget {
               width: MediaQuery.of(context).size.width,
               height: 50,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  goTappay(context);
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black, // Background color
                 ),
@@ -595,4 +598,13 @@ class ImagesSection extends StatelessWidget {
       ),
     );
   }
+}
+
+void goTappay(BuildContext context) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => const TappayPage(),
+    ),
+  );
 }
