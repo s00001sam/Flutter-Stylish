@@ -1,10 +1,14 @@
+import 'dart:ffi';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stylish_flutter_sam/bloc/content/content_selector_cubit.dart';
 import 'package:stylish_flutter_sam/bloc/content/product_content_bloc.dart';
+import 'package:stylish_flutter_sam/data/DBProduct.dart';
 import 'package:stylish_flutter_sam/data/ProductContent.dart';
+import 'package:stylish_flutter_sam/dataprovider/repo/stylish_repository.dart';
 import 'package:stylish_flutter_sam/view/tappay_page.dart';
 
 import '../util/util.dart';
@@ -180,7 +184,6 @@ class NameAndSelectorSection extends StatelessWidget {
 
     return BlocBuilder<ContentSelectorCubit, ContentSelectorState>(
       builder: (context, state) {
-        print('count..=${state.selectedCount}');
         return Column(
           children: [
             Container(
@@ -243,7 +246,7 @@ class NameAndSelectorSection extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  goTappay(context);
+                  insertCart(context, product, state);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black, // Background color
@@ -375,24 +378,7 @@ class SizeSelector extends StatelessWidget {
     String? selectedColorCode,
     ProductSize? selectedSize,
   ) {
-    String sizeText;
-    switch (size) {
-      case ProductSize.small:
-        {
-          sizeText = "S";
-          break;
-        }
-      case ProductSize.medium:
-        {
-          sizeText = "M";
-          break;
-        }
-      case ProductSize.large:
-        {
-          sizeText = "L";
-          break;
-        }
-    }
+    String sizeText = size.toSizeString();
     var containerColor = selectedSize == size ? Colors.amber : Colors.white;
 
     return Container(
@@ -600,11 +586,41 @@ class ImagesSection extends StatelessWidget {
   }
 }
 
-void goTappay(BuildContext context) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => const TappayPage(),
-    ),
+void insertCart(
+  BuildContext context,
+  ProductContent? product,
+  ContentSelectorState state,
+) {
+  var color = state.selectedColor;
+  var size = state.selectedSize?.toSizeString();
+  var count = state.selectedCount;
+  if (product == null) return;
+  if (color == null) return;
+  if (size == null) return;
+  if (count <= 0) return;
+
+  DBProduct dbProduct = DBProduct(
+    id: null,
+    productId: product.productId,
+    imageUrl: product.mainImage,
+    name: product.name,
+    colorCode: color,
+    size: size,
+    count: count,
+    prize: product.price,
   );
+
+  try {
+    StylishRepository repository = StylishRepository();
+    repository.insertCart(dbProduct);
+    toast(context, 'insert ok');
+  } catch (e) {
+    toast(context, 'insert error : $e');
+  }
+}
+
+void toast(BuildContext context, String s) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text(s),
+  ));
 }

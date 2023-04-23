@@ -2,8 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:stylish_flutter_sam/data/HomeItem.dart';
-
-import '../../api/repo/stylish_repository.dart';
+import 'package:stylish_flutter_sam/dataprovider/repo/stylish_repository.dart';
 import '../../data/ProductsDatum.dart';
 
 part 'home_event.dart';

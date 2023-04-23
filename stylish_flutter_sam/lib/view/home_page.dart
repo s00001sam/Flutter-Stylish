@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stylish_flutter_sam/bloc/Home/home_bloc.dart';
+import 'package:stylish_flutter_sam/view/cart_page.dart';
 import 'package:stylish_flutter_sam/view/product_content_page.dart';
 
 import '../data/HomeItem.dart';
@@ -24,6 +25,17 @@ class HomePage extends StatelessWidget {
         ),
         centerTitle: true,
         backgroundColor: const Color(0xffe1e1e1),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(
+              Icons.shopping_cart,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              goCart(context);
+            },
+          )
+        ],
       ),
       body: BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
         if (state is HomeLoadingState) {
@@ -402,5 +414,14 @@ void goProductContent(
     context,
     MaterialPageRoute(
         builder: (context) => ProductContentPage(productId: productId)),
+  );
+}
+
+void goCart(BuildContext context) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => const CartPage(),
+    ),
   );
 }

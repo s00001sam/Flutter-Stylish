@@ -1,8 +1,8 @@
-import 'package:stylish_flutter_sam/api/api_service.dart';
-import 'package:stylish_flutter_sam/api/dataSource/base_data_source.dart';
-import 'package:stylish_flutter_sam/data/ApiProduct.dart';
+import 'package:stylish_flutter_sam/data/DBProduct.dart';
 import 'package:stylish_flutter_sam/data/ProductDetailData.dart';
 import 'package:stylish_flutter_sam/data/ProductsDatum.dart';
+import 'package:stylish_flutter_sam/dataprovider/api_service.dart';
+import 'package:stylish_flutter_sam/dataprovider/dataSource/base_data_source.dart';
 
 class RemoteDataSource extends BaseDataSource {
   final ApiService _apiService = ApiService();
@@ -32,5 +32,23 @@ class RemoteDataSource extends BaseDataSource {
     var response = await _apiService.getProductContent(id);
 
     return ProductDetailData.fromJson(response.data);
+  }
+
+  @override
+  Future<void> deleteFromCart(int id) {
+    // TODO: implement deleteFromCart
+    throw UnimplementedError();
+  }
+
+  @override
+  Future insertCart(DBProduct product) {
+    // TODO: implement insertCart
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<DBProduct>> getProductsInCart() {
+    // TODO: implement queryCart
+    throw UnimplementedError();
   }
 }

@@ -1,9 +1,6 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:stylish_flutter_sam/data/ProductContent.dart';
-
-import '../../api/repo/stylish_repository.dart';
+import 'package:stylish_flutter_sam/dataprovider/repo/stylish_repository.dart';
 
 part 'product_content_event.dart';
 

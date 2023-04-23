@@ -59,6 +59,30 @@ enum ProductSize {
   large,
 }
 
+extension ToSizeExtension on ProductSize {
+  String toSizeString() {
+    var sizeStr = '';
+    switch (this) {
+      case ProductSize.small:
+        {
+          sizeStr = "S";
+          break;
+        }
+      case ProductSize.medium:
+        {
+          sizeStr = "M";
+          break;
+        }
+      case ProductSize.large:
+        {
+          sizeStr = "L";
+          break;
+        }
+    }
+    return sizeStr;
+  }
+}
+
 extension ColorExtension on String {
   ProductSize? toProductSize() {
     switch (this) {
