@@ -613,7 +613,7 @@ void insertCart(
   try {
     StylishRepository repository = StylishRepository();
     repository.insertCart(dbProduct);
-    toast(context, 'insert ok');
+    toast(context, '已加入購物車');
   } catch (e) {
     toast(context, 'insert error : $e');
   }
