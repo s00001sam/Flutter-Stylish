@@ -5,8 +5,8 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:sdp_transform/sdp_transform.dart';
 
 class WebRTCHelper {
-  final localVideoRenderer = RTCVideoRenderer();
-  final remoteVideoRenderer = RTCVideoRenderer();
+  RTCVideoRenderer localVideoRenderer = RTCVideoRenderer();
+  RTCVideoRenderer remoteVideoRenderer = RTCVideoRenderer();
   bool _isCaller = false;
   RTCPeerConnection? _peerConnection;
   MediaStream? _localStream;
@@ -15,6 +15,11 @@ class WebRTCHelper {
   String myId = '';
   String remoteId = '';
   String candidate = '';
+  Function onDisconnect = (){};
+
+  setOnDisconnect(Function onDisconnect) {
+    this.onDisconnect = onDisconnect;
+  }
 
   initRenderer() async {
     await localVideoRenderer.initialize();
@@ -22,7 +27,10 @@ class WebRTCHelper {
   }
 
   dispose() async {
+    await _localStream?.dispose();
+    await _peerConnection?.dispose();
     await localVideoRenderer.dispose();
+    await remoteVideoRenderer.dispose();
   }
 
   getUserMedia() async {
@@ -78,7 +86,10 @@ class WebRTCHelper {
     };
 
     pc.onIceConnectionState = (e) {
-      print(e);
+      print('isCaller=$_isCaller RTCIceConnectionState=$e');
+      if(e == RTCIceConnectionState.RTCIceConnectionStateDisconnected) {
+        onDisconnect.call();
+      }
     };
 
     pc.onAddStream = (stream) {
@@ -112,7 +123,6 @@ class WebRTCHelper {
   }
 
   Future<void> setRemoteDescription(String remoteDescriptionJson) async {
-    // String jsonString = sdpController.text;
     dynamic session = await jsonDecode(remoteDescriptionJson);
 
     String sdp = write(session, null);
@@ -125,12 +135,12 @@ class WebRTCHelper {
   }
 
   void addCandidate(String candidateJson) async {
-    // String jsonString = sdpController.text;
     dynamic session = await jsonDecode(candidateJson);
     print(session['candidate']);
     dynamic candidate = RTCIceCandidate(
         session['candidate'], session['sdpMid'], session['sdpMlineIndex']);
     await _peerConnection!.addCandidate(candidate);
+    clearFirebaseData(myId, remoteId);
   }
 }
 
@@ -144,4 +154,14 @@ createFirebaseAnswerAndCandidate(
     "remoteAnswer": answer,
     "remoteCandidate": candidate,
   });
+}
+
+clearFirebaseData(
+    String myId,
+    String remoteId,
+    ) {
+  DatabaseReference ref = FirebaseDatabase.instance.ref(myId);
+  DatabaseReference remoteRef = FirebaseDatabase.instance.ref(remoteId);
+  ref.remove();
+  remoteRef.remove();
 }

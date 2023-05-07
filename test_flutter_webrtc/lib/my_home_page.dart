@@ -53,6 +53,9 @@ class _MyHomePageState extends State<MyHomePage> {
     webrtcHelper.myId = widget.id;
     webrtcHelper.initRenderer();
     webrtcHelper.createPeerConnecion();
+    webrtcHelper.setOnDisconnect(() {
+      Navigator.pop(context);
+    });
     setFirebaseSnapShotListener();
     super.initState();
   }
@@ -124,7 +127,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 });
               }
             },
-            child: const Text("call"),
+            child: const Text("撥打視訊電話"),
+          ),
+          const SizedBox(height: 16.0,),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text("掛斷"),
           ),
         ],
       ),
