@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "306644224408",
+    "project_id": "webrtc-test-e9f72",
+    "storage_bucket": "webrtc-test-e9f72.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:306644224408:android:e1cdf9d5b419b7f45d03ed",
+        "android_client_info": {
+          "package_name": "com.sam.test_flutter_webrtc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "306644224408-s1mf215dia4nv1114sq124v0nej0eanc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAE6M3xVRSTb9zwLScNCsvDpp1kEe1sQ40"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "306644224408-s1mf215dia4nv1114sq124v0nej0eanc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "306644224408-u3pt5sb4v70lj42a6a4oa557o781iim1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.sam.testFlutterWebrtc"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
