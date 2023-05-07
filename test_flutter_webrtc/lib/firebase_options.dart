@@ -49,6 +49,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '306644224408',
     projectId: 'webrtc-test-e9f72',
     authDomain: 'webrtc-test-e9f72.firebaseapp.com',
+    databaseURL: 'https://webrtc-test-e9f72-default-rtdb.firebaseio.com',
     storageBucket: 'webrtc-test-e9f72.appspot.com',
   );
 
@@ -57,6 +58,7 @@ class DefaultFirebaseOptions {
     appId: '1:306644224408:android:e1cdf9d5b419b7f45d03ed',
     messagingSenderId: '306644224408',
     projectId: 'webrtc-test-e9f72',
+    databaseURL: 'https://webrtc-test-e9f72-default-rtdb.firebaseio.com',
     storageBucket: 'webrtc-test-e9f72.appspot.com',
   );
 
@@ -65,6 +67,7 @@ class DefaultFirebaseOptions {
     appId: '1:306644224408:ios:c7ff31846c75d2605d03ed',
     messagingSenderId: '306644224408',
     projectId: 'webrtc-test-e9f72',
+    databaseURL: 'https://webrtc-test-e9f72-default-rtdb.firebaseio.com',
     storageBucket: 'webrtc-test-e9f72.appspot.com',
     iosClientId: '306644224408-u3pt5sb4v70lj42a6a4oa557o781iim1.apps.googleusercontent.com',
     iosBundleId: 'com.sam.testFlutterWebrtc',
@@ -75,6 +78,7 @@ class DefaultFirebaseOptions {
     appId: '1:306644224408:ios:c7ff31846c75d2605d03ed',
     messagingSenderId: '306644224408',
     projectId: 'webrtc-test-e9f72',
+    databaseURL: 'https://webrtc-test-e9f72-default-rtdb.firebaseio.com',
     storageBucket: 'webrtc-test-e9f72.appspot.com',
     iosClientId: '306644224408-u3pt5sb4v70lj42a6a4oa557o781iim1.apps.googleusercontent.com',
     iosBundleId: 'com.sam.testFlutterWebrtc',
